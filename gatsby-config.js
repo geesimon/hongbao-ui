@@ -1,7 +1,7 @@
 module.exports = {
   siteMetadata: {
     title: `Hongbao`,
-    siteUrl: `https://www.yourdomain.tld`,
+    siteUrl: `https://www.hongbao.tld`,
   },
   plugins: [],
 }
