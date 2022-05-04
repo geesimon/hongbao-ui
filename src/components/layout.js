@@ -9,11 +9,6 @@ const Layout = ({ pageTitle, children }) => {
         <main className="container">
             <title>{pageTitle}</title>
             <Header />
-            <Row className="mx-0">
-                <Button as={Col} variant="primary">Connect Wallet</Button>
-                <Button as={Col} variant="secondary" className="mx-2">Create New Campaign</Button>
-                <Button as={Col} variant="success">Button #3</Button>
-            </Row>
             {children}
             <Footer />            
         </main>

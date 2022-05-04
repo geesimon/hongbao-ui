@@ -1,15 +1,41 @@
-import * as React from 'react'
-import { Link } from 'gatsby'
+import * as React from 'react';
+import {Table} from 'react-bootstrap';
+import Layout from '../components/layout';
 
 const MyCampaigns = () => {
   return (
-    <main>
-      <title>My Campaigns</title>
-      <h1>My Campaigns</h1>
-      <h1>About Me</h1>
-      <p>Hi there! I'm the proud creator of this site, which I built with Gatsby.</p>
-      <Link to="/">Back to Home</Link>
-    </main>
+    <Layout pageTitle="My Campaigns">
+      <Table striped bordered hover>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Amount</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Mark</td>
+            <td>$100</td>
+            <td>Withdraw</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Jacob</td>
+            <td>$200</td>
+            <td>Withdraw</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Larry the Bird</td>
+            <td>$3,000</td>
+            <td>Withdraw</td>
+          </tr>
+        </tbody>
+      </Table>
+    </Layout>
   )
 }
 
