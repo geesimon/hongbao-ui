@@ -1,14 +1,13 @@
 import * as React from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import {Button, Row, Col} from 'react-bootstrap';
+import LightHeader from './LightHeader';
+import Footer from './Footer';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Layout = ({ pageTitle, children }) => {
     return (
         <main className="container">
             <title>{pageTitle}</title>
-            <Header />
+            <LightHeader />
             {children}
             <Footer />            
         </main>

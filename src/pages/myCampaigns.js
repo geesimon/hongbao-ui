@@ -1,38 +1,42 @@
 import * as React from 'react';
-import {Table} from 'react-bootstrap';
-import Layout from '../components/layout';
+import {Table, Button} from 'react-bootstrap';
+import Layout from '../components/Layout';
+import {getMyCampaignIDs, getCampaignInfo} from '../contract'
 
 const MyCampaigns = () => {
+  const [campaigns, setCampaigns] = React.useState([]);
+
+  React.useEffect(() => {
+    getMyCampaignIDs().then(ids => {
+      const allInfo = ids.map(id => getCampaignInfo(id));      
+      Promise.all(allInfo).then(values => setCampaigns(values))
+    })
+  }, []);
+  
   return (
     <Layout pageTitle="My Campaigns">
       <Table striped bordered hover>
         <thead>
           <tr>
-            <th>#</th>
+            <th>Id</th>
             <th>Title</th>
             <th>Amount</th>
-            <th></th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>1</td>
-            <td>Mark</td>
-            <td>$100</td>
-            <td>Withdraw</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Jacob</td>
-            <td>$200</td>
-            <td>Withdraw</td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>Larry the Bird</td>
-            <td>$3,000</td>
-            <td>Withdraw</td>
-          </tr>
+          {
+            campaigns.map(c => {
+              return (
+                <tr key = {c.id}>
+                  <td>{c.id}</td>
+                  <td>{c.name}</td>
+                  <td>{c.balance}</td>
+                  <td><Button href={"campaign?id="+c.id}>Details</Button></td>
+                </tr>
+              )
+            })
+          }
         </tbody>
       </Table>
     </Layout>

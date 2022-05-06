@@ -30,8 +30,8 @@ const getSigner = async () => {
   }
 }
 
-const getCampaignManager = async (useSigner) => {
-  const provider = useSigner ? await getSigner() : getProvider();
+const getCampaignManager = async (_useSigner) => {
+  const provider = _useSigner ? await getSigner() : getProvider();
 
   return new ethers.Contract(CampaignManagerAddress, CampaignManagerAbi, provider);
 }
@@ -48,10 +48,18 @@ export const getMyCampaignIDs = async () => {
   return campaignManager.getMyCampaignIDs();
 }
 
-export const getCampaignInfo = async (id) => {
-  const campaignManager = await getCampaignManager(false);
+export const getCampaignInfo = async (_id) => {
+  const provider = getProvider();
+  const campaignManager = new ethers.Contract(CampaignManagerAddress, CampaignManagerAbi, provider);
+   
 
-  const res =  await campaignManager.getCampaignInfo(id);
-  return {contract:res.campaignContract, name: res.name, description:res.description};
+  const res =  await campaignManager.getCampaignInfo(_id);
+  const balance = await provider.getBalance(res.campaignContract);
+  return {
+          id: Number(_id), 
+          contract:res.campaignContract, 
+          name: res.name, 
+          description:res.description,
+          balance: ethers.utils.formatEther(balance)
+        };
 }
-

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import {Card, Button, ListGroup, ListGroupItem} from 'react-bootstrap';
-import Layout from '../components/layout';
+import {Card, Button} from 'react-bootstrap';
+import Layout from '../components/Layout';
 
 const CampaignPage = () => {
   return (

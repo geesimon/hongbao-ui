@@ -1,7 +1,8 @@
 import * as React from 'react';
 import {Button, Form, FormControl} from 'react-bootstrap';
-import Layout from '../components/layout';
-import {createCampaign, getMyCampaignIDs, getCampaignInfo} from '../contract'
+import Layout from '../components/Layout';
+import {createCampaign} from '../contract'
+import { navigate } from 'gatsby';
 
 const CreateCampaignPage = () => {
   const [campaignInfo, setCampaignInfo] = React.useState({
@@ -14,14 +15,8 @@ const CreateCampaignPage = () => {
       if (campaignInfo.name.length === 0 || campaignInfo.description.length === 0) {
         alert("Title or description cannot be empty");
       } else {
-        const tx = await createCampaign(campaignInfo.name, campaignInfo.description);        
-        console.log(tx);
-
-        // const ids = await getMyCampaignIDs();
-        // console.log(ids);
-
-        // const info = await getCampaignInfo(ids[ids.length - 1]);
-        // console.log(info);
+        await createCampaign(campaignInfo.name, campaignInfo.description);
+        navigate("/myCampaigns");
       }
     } catch (err) {
       console.log(err);
