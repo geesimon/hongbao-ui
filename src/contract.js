@@ -3,7 +3,6 @@ import CampaignManagerContract from './contracts/CampaignManager.json';
 const CampaignManagerAbi = CampaignManagerContract.abi;
 const CampaignManagerAddress = "0x695B4367D9096D287960718Bf509bB53be6e3B56";
 
-
 // const CampaignManagerAbi = [
 //   "function createCampaign (string _name, string  _description) returns (address)",
 //   "function getMyCampaignIDs() external view returns (uint256[])",
@@ -19,42 +18,40 @@ const getProvider = () => {
   return new ethers.providers.Web3Provider(window.ethereum);
 }
 
-export const getSigner = async () => {
+const getSigner = async () => {
   const web3Provider = getProvider();
     
   try{
     await web3Provider.send("eth_requestAccounts", []);
-    const signer = web3Provider.getSigner();
-      
-    return signer;
+    return web3Provider.getSigner();
   } catch (err) {
     console.log(err)
-      return null;
+    return null;
   }
 }
 
-export const createCampaign = async (_signer, _name, _description) => {
-  const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-  // await web3Provider.send("eth_requestAccounts", []);
-  const signer = web3Provider.getSigner();
+const getCampaignManager = async (useSigner) => {
+  const provider = useSigner ? await getSigner() : getProvider();
 
-  const campaignManagerContract = new ethers.Contract(CampaignManagerAddress, CampaignManagerAbi, signer);
-  // const campaignManagerSigner = campaignManagerContract.connect(signer);
+  return new ethers.Contract(CampaignManagerAddress, CampaignManagerAbi, provider);
+}
+
+export const createCampaign = async (_name, _description) => {
+  const campaignManager = await getCampaignManager(true);
   
-  return await campaignManagerContract.createCampaign(_name, _description);
+  return campaignManager.createCampaign(_name, _description);
 }
 
-export const getMyCampaignIDs = (_signer) => {
-  const web3Provider = getProvider();
-  const campaignManagerContract = new ethers.Contract(CampaignManagerAddress, CampaignManagerAbi, web3Provider);
-  const campaignManagerSigner = campaignManagerContract.connect(_signer);
-  // return campaignManagerContract.getMyCampaignIDs();
-  return campaignManagerSigner.getMyCampaignIDs();
+export const getMyCampaignIDs = async () => {
+  const campaignManager = await getCampaignManager(true);
+  
+  return campaignManager.getMyCampaignIDs();
 }
 
-export const getCampaignInfo = (id) => {
-  const web3Provider = getProvider();
-  const campaignManagerContract = new ethers.Contract(CampaignManagerAddress, CampaignManagerAbi, web3Provider);
-  return campaignManagerContract.getCampaignInfo(id);
+export const getCampaignInfo = async (id) => {
+  const campaignManager = await getCampaignManager(false);
+
+  const res =  await campaignManager.getCampaignInfo(id);
+  return {contract:res.campaignContract, name: res.name, description:res.description};
 }
 
