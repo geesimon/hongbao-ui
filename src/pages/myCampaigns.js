@@ -32,7 +32,7 @@ const MyCampaigns = () => {
                   <td>{c.id}</td>
                   <td>{c.name}</td>
                   <td>{c.balance}</td>
-                  <td><Button href={"campaign?id="+c.id}>Details</Button></td>
+                  <td><Button href={"../campaign?id="+c.id}>Details</Button></td>
                 </tr>
               )
             })
