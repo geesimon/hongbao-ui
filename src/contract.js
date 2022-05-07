@@ -1,7 +1,9 @@
 import { ethers } from 'ethers';
 import CampaignManagerContract from './contracts/CampaignManager.json';
 const CampaignManagerAbi = CampaignManagerContract.abi;
-const CampaignManagerAddress = "0x695B4367D9096D287960718Bf509bB53be6e3B56";
+// const CampaignManagerAddress = "0x695B4367D9096D287960718Bf509bB53be6e3B56"; 
+// const CampaignManagerAddress = "0x3564D9e3dcdc648318394f87091efc8F31191f15"; //Dev
+const CampaignManagerAddress = "0xb4b99e1a14281233AE57BC39c97D9e0585676249" //Harmony Test
 
 // const CampaignManagerAbi = [
 //   "function createCampaign (string _name, string  _description) returns (address)",
