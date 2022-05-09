@@ -9,11 +9,11 @@ const bigInt = require('big-integer');
 const FEE = '0';
 const REFUND = '0';
 const TREE_LEVELS = 20;
-const BALANCE_MULTIPLIER = 10;
+const BALANCE_MULTIPLIER = 1;
 
-const CampaignManagerAddress = "0x333e769EF1772AE3678c63E8f4879e65935C1280"; //Dev
-// const CampaignManagerAddress = "0xb4b99e1a14281233AE57BC39c97D9e0585676249" //Harmony Test
-// const CampaignManagerAddress = "0x333e769EF1772AE3678c63E8f4879e65935C1280"; //Harmony Production
+// const CampaignManagerAddress = "0xFaA61fF00986079Ce84189F35b1677610A2eCd98"; //Dev
+// const CampaignManagerAddress = "0x68ca3828C0268Cd9A6048E7F3DB4fDfcf971C38d" //Harmony Test
+const CampaignManagerAddress = "0x46ae45448ddEd730d1AcA074f806109245a08502"; //Harmony Mainnet
 
 const CampaignManagerAbi = CampaignManagerContract.abi;
 // const CampaignManagerAbi = [
@@ -26,13 +26,21 @@ const CampaignManagerAbi = CampaignManagerContract.abi;
 //           "function getCampaignInfo(uint256) view returns (tuple(address,string,string))"
 // ];
 
+// const ETHHongbaoAddresses = { 
+//   //Harmony Test
+//   1 : "0xC8B9DFe300F374491a25597043252F1343b250f0", 
+//   10 : "0x5B26C997f65e5E4ec93CB05A9a795F9DE2D4150e",
+//   100 : "0x5b630F70943199EaD899D61BdfaC42D5DC699c95",
+//   1000 : "0x1B3Ed84f469c65B35E38e6Ff64584dE9a92d4f13"
+// };
 const ETHHongbaoAddresses = { 
-  //Dev
-  1 : "0x87c4a39A42F37e5Ff389BE1D66B751bDF96E30de", 
-  10 : "0x796a5cFa94514a2Ab712d92155a143910AdE6B83",
-  100 : "0xE132BE9A86ed2225694e52612DeFE8B8e908b74f",
-  1000 : "0x036eFb372AE6e7E2b33A48239be2bD1b5c4bF20D"
+  //Harmony Mainnet
+  1 : "0x85f179b1763AE933d6B95A8B473889e9d290A784", 
+  10 : "0x674f5440Aea3679A5567dFE3c621131Da427605B",
+  100 : "0x79670b9EBCcb8c562F0e42c46EE8086726F9B93D",
+  1000 : "0x56A67a9933EC75d47E29c7D1D6C8d155A54ccf43"
 };
+
 const ETHHongbaoAbi = ETHHongbaoContract.abi;
 
 const CampaignAbi = CampaignContract.abi;
