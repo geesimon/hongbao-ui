@@ -6,6 +6,7 @@ import {generateDeposit} from '/static/utils'
 
 const CampaignPage = () => {
   const [campaign, setCampaign] = React.useState({
+                                    campaignContract:'',
                                     name:'',
                                     description: '',
                                     balance: 0,
@@ -38,9 +39,8 @@ const CampaignPage = () => {
     const depositNote = await generateDeposit();
     console.log(depositNote);
 
-    const txArgs = await makeDeposit(depositNote.commitment, campaign.amount);
-    await makeWithdrawal(depositNote, txArgs);
-
+    const {HongbaoContract, txArgs} = await makeDeposit(depositNote.commitment, campaign.amount);
+    await makeWithdrawal(depositNote, txArgs, HongbaoContract, campaign.contract);
   }
 
   const handleChangeAmount = (event) =>{

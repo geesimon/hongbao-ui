@@ -3,7 +3,7 @@ import CampaignManagerContract from './CampaignManager.json';
 import ETHHongbaoContract from './ETHHongbao.json';
 import * as utils from './utils.js';
 
-// const bigInt = require('big-integer');
+const bigInt = require('big-integer');
 
 const FEE = '0';
 const REFUND = '0';
@@ -88,7 +88,7 @@ export const getCampaignInfo = async (_id) => {
 
 export const makeDeposit = async(_commitment, _amount) => {
     console.log("Preparing deposit...")
-    const ETHHongbao = await getETHHongbao(ETHHongbaoAddresses[_amount]);    
+    const ETHHongbao = await getETHHongbao(ETHHongbaoAddresses[_amount]);
     const sendValue = ethers.utils.parseEther((_amount / 10).toString()).toString();
     console.log("Making deposit...")
     const tx = await ETHHongbao.deposit(utils.toFixedHex(_commitment), 
@@ -96,27 +96,55 @@ export const makeDeposit = async(_commitment, _amount) => {
     const {events} = await tx.wait();
     console.log(events[0].args);
     
-    return events[0].args;
+    return {
+      HongbaoContract: ETHHongbao,
+      txArgs: events[0].args
+    }
 }
 
-export const makeWithdrawal = async(depositNote, depositTxArgs, _recipientAddress) => {
-  const { root, pathElements, pathIndices } = depositTxArgs;
+export const makeWithdrawal = async(_depositNote, 
+                                    _depositTxArgs,
+                                    _hongbaoContract,
+                                    _recipientAddress) => {
+  console.log("Generating Proof");
 
-  console.log("Preparing Proof");
+  const { root, pathElements, pathIndices } = _depositTxArgs;
+  let nullifierHash = await utils.pedersenHasher(utils.bigInt2BytesLE(_depositNote.nullifier, 31));
 
   const input = {
     root: root,
-    nullifier: depositNote.nullifier.toString(),
-    nullifierHash: utils.pedersenHasher(utils.bigInt2BytesLE(depositNote.nullifier, 31)).toString(),
-    secret: depositNote.secret.toString(),
+    nullifier: _depositNote.nullifier.toString(),
+    nullifierHash: nullifierHash.toString(),
+    secret: _depositNote.secret.toString(),
     pathElements: pathElements,
     pathIndices: utils.bits2PathIndices(pathIndices, TREE_LEVELS),
     recipient: _recipientAddress,
-    relayer: utils.bigInt(RELAYER.slice(2), 16).toString(),
+    relayer: bigInt(RELAYER.slice(2), 16).toString(),
     fee: FEE.toString(),
     refund: REFUND.toString(),
   };
 
   console.log(input);
+
+  const {proof, publicSignals} = await window.snarkjs.groth16.fullProve(
+                                            input,
+                                            '../withdraw.wasm',
+                                            '../circuit_withdraw_final.zkey'
+                                          );
+  console.log("Verifying proof")
+  const vkey = await window.fetch("../withdraw_verification_key.json")
+                .then( function(res) {
+                  return res.json();
+                });
+  const res = await window.snarkjs.groth16.verify(vkey, publicSignals, proof);
+  console.log(res);
+  
   console.log("Withdrawing...");
+  
+  const proofData = utils.packProofData(proof);
+
+  const tx = await _hongbaoContract.withdraw(proofData, publicSignals);
+  const receipt = await tx.wait();
+
+  console.log(receipt)
 } 
