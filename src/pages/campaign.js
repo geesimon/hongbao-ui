@@ -1,7 +1,7 @@
 import * as React from 'react';
-import {Card, Button, Form, Row, Col} from 'react-bootstrap';
+import {Card, Button, Form, Row, Col, ProgressBar, ButtonToolbar} from 'react-bootstrap';
 import Layout from '../components/Layout';
-import { getCampaignInfo, makeDeposit, makeWithdrawal } from '/static/contract';
+import { getCampaignInfo, makeDeposit, makeTransfer, makeWithdrawal } from '/static/contract';
 import {generateDeposit} from '/static/utils'
 
 const CampaignPage = () => {
@@ -10,7 +10,13 @@ const CampaignPage = () => {
                                     name:'',
                                     description: '',
                                     balance: 0,
-                                    amount: 0
+                                    amount: 0,
+                                    status: 'disabled'
+                                  });
+  const [progress, setProgress] = React.useState({
+                                      variant: 'info',
+                                      status: '',
+                                      percentage: 0
                                   });
 
   React.useEffect(() => {
@@ -36,11 +42,26 @@ const CampaignPage = () => {
     // console.log(mimcHasher(1, 2));
     // mimcHasher(1, 2).then(n => console.log(n));
     // pedersenHasher(Buffer(32).fill(1)).then(n => console.log(n));
+    setProgress({status: 'Generating Deposit Commitment...', percentage: 1})
     const depositNote = await generateDeposit();
     console.log(depositNote);
 
-    const {HongbaoContract, txArgs} = await makeDeposit(depositNote.commitment, campaign.amount);
-    await makeWithdrawal(depositNote, txArgs, HongbaoContract, campaign.contract);
+    const {HongbaoContract, txArgs} = await makeDeposit(
+                                                        depositNote.commitment, 
+                                                        campaign.amount,
+                                                        setProgress
+                                                        );
+    await makeTransfer(
+                        depositNote, 
+                        txArgs, 
+                        HongbaoContract, 
+                        campaign.contract,
+                        setProgress
+                        );
+  }
+
+  const handleWithdrawClick = async() =>{
+    await makeWithdrawal(campaign.contract, setProgress);
   }
 
   const handleChangeAmount = (event) =>{
@@ -57,7 +78,7 @@ const CampaignPage = () => {
       <Card >
         <Card.Body>
           <Card.Title>{campaign.name}</Card.Title>
-          <Card.Subtitle className="mb-2 text-muted">Already Got: {campaign.balance} </Card.Subtitle>
+          <Card.Subtitle className="mb-2 text-muted">Already Got: {campaign.balance * 10} </Card.Subtitle>
           <Card.Text>
             {campaign.description}
           </Card.Text>          
@@ -101,7 +122,11 @@ const CampaignPage = () => {
                 />
               </Col>
             </Form.Group>
-            {(campaign.amount !== 0) && <Button variant="primary" onClick={handleGiveClick}>Give</Button>}
+            {(progress.percentage === 0) ? ( <ButtonToolbar className="justify-content-between" >
+                                              <Button variant="primary" disabled={campaign.amount === 0} size="lg" onClick={handleGiveClick}>Give</Button>
+                                              <Button variant="primary" size="lg" onClick={handleWithdrawClick}>Withdraw</Button>                                            
+                                            </ButtonToolbar>) : 
+                                         (<ProgressBar striped variant={progress.variant} now={progress.percentage} label={progress.status}/>)}
             </Form>          
         </Card.Body>
       </Card>

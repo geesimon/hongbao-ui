@@ -6,7 +6,7 @@ export default function LightHeader() {
     return (
         <Navbar bg="light" expand="lg">
         <Container>
-            <Navbar.Brand href="/createCampaign">
+            <Navbar.Brand href="/">
             <img
                 src= {logo}
                 width = "30"
