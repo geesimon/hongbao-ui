@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
-import ETHHongbaoContract from './ETHHongbao.json';
-import CampaignManagerContract from './CampaignManager.json';
-import CampaignContract from './Campaign.json';
+import ETHHongbaoContract from '../src/contracts/ETHHongbao.json';
+import CampaignManagerContract from '../src/contracts/CampaignManager.json';
+import CampaignContract from '../src/contracts/Campaign.json';
 import * as utils from './utils.js';
 
 const bigInt = require('big-integer');
@@ -9,14 +9,23 @@ const bigInt = require('big-integer');
 const FEE = '0';
 const REFUND = '0';
 const TREE_LEVELS = 20;
+const BALANCE_MULTIPLIER = 10;
 
-
-const CampaignManagerAbi = CampaignManagerContract.abi;
 const CampaignManagerAddress = "0x333e769EF1772AE3678c63E8f4879e65935C1280"; //Dev
 // const CampaignManagerAddress = "0xb4b99e1a14281233AE57BC39c97D9e0585676249" //Harmony Test
 // const CampaignManagerAddress = "0x333e769EF1772AE3678c63E8f4879e65935C1280"; //Harmony Production
 
-const ETHHongbaoAbi = ETHHongbaoContract.abi;
+const CampaignManagerAbi = CampaignManagerContract.abi;
+// const CampaignManagerAbi = [
+//           "constructor(address[])", 
+//           "function campaignIDs(address,uint256) view returns (uint256)", 
+//           "function currentCampaignIndex() view returns (uint256)", 
+//           "function hongbaos(uint256) view returns (address)", 
+//           "function createCampaign(string,string) returns (address)", 
+//           "function getMyCampaignIDs() view returns (uint256[])", 
+//           "function getCampaignInfo(uint256) view returns (tuple(address,string,string))"
+// ];
+
 const ETHHongbaoAddresses = { 
   //Dev
   1 : "0x87c4a39A42F37e5Ff389BE1D66B751bDF96E30de", 
@@ -24,10 +33,22 @@ const ETHHongbaoAddresses = {
   100 : "0xE132BE9A86ed2225694e52612DeFE8B8e908b74f",
   1000 : "0x036eFb372AE6e7E2b33A48239be2bD1b5c4bF20D"
 };
+const ETHHongbaoAbi = ETHHongbaoContract.abi;
 
 const CampaignAbi = CampaignContract.abi;
 
 const RELAYER = '0x851C97eAba917b43CBa3724D6D810DbdfE416463';
+
+export const abiJson2Human = () => {
+  let iface = new ethers.utils.Interface(CampaignManagerAbi);
+  console.log(iface.format(ethers.utils.FormatTypes.full));
+
+  iface = new ethers.utils.Interface(ETHHongbaoAbi);
+  console.log(iface.format(ethers.utils.FormatTypes.full));  
+
+  iface = new ethers.utils.Interface(CampaignAbi);
+  console.log(iface.format(ethers.utils.FormatTypes.full));  
+}
 
 const getProvider = () => {
   const {ethereum} = window;
@@ -92,14 +113,14 @@ export const getCampaignInfo = async (_id) => {
           contract:res.campaignContract, 
           name: res.name, 
           description:res.description,
-          balance: ethers.utils.formatEther(balance)
+          balance: ethers.utils.formatEther((Number(balance) * BALANCE_MULTIPLIER).toString())
         };
 }
 
 export const makeDeposit = async(_commitment, _amount, _setProgress) => {
     _setProgress({status: 'Making deposit', variant: 'info', percentage: 5})
     const ETHHongbao = await getETHHongbao(ETHHongbaoAddresses[_amount]);
-    const sendValue = ethers.utils.parseEther((_amount / 10).toString()).toString();
+    const sendValue = ethers.utils.parseEther((_amount / BALANCE_MULTIPLIER).toString()).toString();
     _setProgress({status: 'Making Deposit...', variant: 'info', percentage: 5})
     const tx = await ETHHongbao.deposit(utils.toFixedHex(_commitment), 
                                               { value: sendValue });

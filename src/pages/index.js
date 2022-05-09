@@ -12,7 +12,7 @@ const IndexPage = () => {
         Create New Campaign
         </Button>
         <Button variant="secondary" size="lg" href="myCampaigns">
-        Check My Current Campaign
+        Check My Current Campaigns
         </Button>
       </div>
     </Layout>

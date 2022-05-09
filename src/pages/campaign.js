@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Card, Button, Form, Row, Col, ProgressBar, ButtonToolbar} from 'react-bootstrap';
 import Layout from '../components/Layout';
-import { getCampaignInfo, makeDeposit, makeTransfer, makeWithdrawal } from '/static/contract';
+import { getCampaignInfo, makeDeposit, makeTransfer, makeWithdrawal, abiJson2Human } from '/static/contract';
 import {generateDeposit} from '/static/utils'
 
 const CampaignPage = () => {
@@ -20,6 +20,8 @@ const CampaignPage = () => {
                                   });
 
   React.useEffect(() => {
+    abiJson2Human()
+
     // Add snarkjs script
     const script = document.createElement('script');
     script.src = "/snarkjs.min.js";
@@ -78,7 +80,7 @@ const CampaignPage = () => {
       <Card >
         <Card.Body>
           <Card.Title>{campaign.name}</Card.Title>
-          <Card.Subtitle className="mb-2 text-muted">Already Got: {campaign.balance * 10} </Card.Subtitle>
+          <Card.Subtitle className="mb-2 text-muted">Already Got: {campaign.balance} </Card.Subtitle>
           <Card.Text>
             {campaign.description}
           </Card.Text>          
