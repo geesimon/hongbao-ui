@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Button, Form, FormControl} from 'react-bootstrap';
 import Layout from '../components/Layout';
-import {createCampaign} from '../contract'
+import {createCampaign} from '/static/contract'
 import { navigate } from 'gatsby';
 
 const CreateCampaignPage = () => {

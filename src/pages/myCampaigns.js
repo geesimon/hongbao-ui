@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Table, Button} from 'react-bootstrap';
 import Layout from '../components/Layout';
-import {getMyCampaignIDs, getCampaignInfo} from '../contract'
+import {getMyCampaignIDs, getCampaignInfo} from '/static/contract'
 
 const MyCampaigns = () => {
   const [campaigns, setCampaigns] = React.useState([]);
