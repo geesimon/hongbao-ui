@@ -6,14 +6,15 @@ import * as utils from './utils.js';
 
 const bigInt = require('big-integer');
 
-const FEE = '0';
 const REFUND = '0';
 const TREE_LEVELS = 20;
 const BALANCE_MULTIPLIER = 1;
 
-// const CampaignManagerAddress = "0xFaA61fF00986079Ce84189F35b1677610A2eCd98"; //Dev
+const RELAYER_URL = 'http://localhost:3000/api/relay';
+
+const CampaignManagerAddress = "0xFaA61fF00986079Ce84189F35b1677610A2eCd98"; //Dev
 // const CampaignManagerAddress = "0x68ca3828C0268Cd9A6048E7F3DB4fDfcf971C38d" //Harmony Test
-const CampaignManagerAddress = "0x46ae45448ddEd730d1AcA074f806109245a08502"; //Harmony Mainnet
+// const CampaignManagerAddress = "0x46ae45448ddEd730d1AcA074f806109245a08502"; //Harmony Mainnet
 
 const CampaignManagerAbi = CampaignManagerContract.abi;
 // const CampaignManagerAbi = [
@@ -26,6 +27,21 @@ const CampaignManagerAbi = CampaignManagerContract.abi;
 //           "function getCampaignInfo(uint256) view returns (tuple(address,string,string))"
 // ];
 
+const ETHHongbaoAddresses = { 
+  //Dev
+  1 : "0x0CD5a54bBA5141d323d1aFe8F93B35689963a590", 
+  10 : "0x695B4367D9096D287960718Bf509bB53be6e3B56",
+  100 : "0x46E248A26DF44Ab181853823525b7481a5053146",
+  1000 : "0x49be4829a87fBd4E258995De15BE845B8cb4716f"
+};
+
+const Fees = {
+  1: ethers.utils.parseEther('0.1'),
+  10: ethers.utils.parseEther('1'),
+  100: ethers.utils.parseEther('1'),
+  1000: ethers.utils.parseEther('1')
+};
+
 // const ETHHongbaoAddresses = { 
 //   //Harmony Test
 //   1 : "0xC8B9DFe300F374491a25597043252F1343b250f0", 
@@ -33,19 +49,19 @@ const CampaignManagerAbi = CampaignManagerContract.abi;
 //   100 : "0x5b630F70943199EaD899D61BdfaC42D5DC699c95",
 //   1000 : "0x1B3Ed84f469c65B35E38e6Ff64584dE9a92d4f13"
 // };
-const ETHHongbaoAddresses = { 
-  //Harmony Mainnet
-  1 : "0x85f179b1763AE933d6B95A8B473889e9d290A784", 
-  10 : "0x674f5440Aea3679A5567dFE3c621131Da427605B",
-  100 : "0x79670b9EBCcb8c562F0e42c46EE8086726F9B93D",
-  1000 : "0x56A67a9933EC75d47E29c7D1D6C8d155A54ccf43"
-};
+
+// const ETHHongbaoAddresses = { 
+//   //Harmony Mainnet
+//   1 : "0x85f179b1763AE933d6B95A8B473889e9d290A784", 
+//   10 : "0x674f5440Aea3679A5567dFE3c621131Da427605B",
+//   100 : "0x79670b9EBCcb8c562F0e42c46EE8086726F9B93D",
+//   1000 : "0x56A67a9933EC75d47E29c7D1D6C8d155A54ccf43"
+// };
 
 const ETHHongbaoAbi = ETHHongbaoContract.abi;
-
 const CampaignAbi = CampaignContract.abi;
 
-const RELAYER = '0x851C97eAba917b43CBa3724D6D810DbdfE416463';
+const RELAYER = '0xb685a03e2fdbb4f66af57513ea64c7821e15da37';
 
 export const abiJson2Human = () => {
   let iface = new ethers.utils.Interface(CampaignManagerAbi);
@@ -98,6 +114,8 @@ const getCampaign = async (_address) => {
   return new ethers.Contract(_address, CampaignAbi, provider);
 }
 
+export const getFee = (_amount) => Fees[_amount];
+
 export const createCampaign = async (_name, _description) => {
   const campaignManager = await getCampaignManager(true);
   
@@ -142,12 +160,34 @@ export const makeDeposit = async(_commitment, _amount, _setProgress) => {
     }
 }
 
+const postToRelayer = async (_proofData, _publicSignals, _hongbaoAddress) => {
+  const reqJSON = JSON.stringify({
+                                  proofData: _proofData,
+                                  publicSignals: _publicSignals,
+                                  hongbaoAddress: _hongbaoAddress
+                                });
+  const rawResponse = await window.fetch(RELAYER_URL, {
+                                      method: 'POST',
+                                      headers: {
+                                        'Accept': 'application/json',
+                                        'Content-Type': 'application/json'
+                                      },
+                                      body: reqJSON});
+
+  const response = await rawResponse.json();
+
+  // console.log("Relayer response:", response);
+
+  return response;
+}
+
 export const makeTransfer = async(
                                     _depositNote, 
                                     _depositTxArgs,
                                     _hongbaoContract,
                                     _recipientAddress,
-                                    _setProgress
+                                    _setProgress,
+                                    _fee
                                     ) => {
   _setProgress({status: 'Generating ZK Proof...', variant: 'info', percentage: 40})
 
@@ -163,7 +203,7 @@ export const makeTransfer = async(
     pathIndices: utils.bits2PathIndices(pathIndices, TREE_LEVELS),
     recipient: _recipientAddress,
     relayer: bigInt(RELAYER.slice(2), 16).toString(),
-    fee: FEE.toString(),
+    fee: _fee.toString(),
     refund: REFUND.toString(),
   };
 
@@ -189,12 +229,18 @@ export const makeTransfer = async(
   
   const proofData = utils.packProofData(proof);
 
-  const tx = await _hongbaoContract.withdraw(proofData, publicSignals);
-  _setProgress({status: 'Waiting Confirmation...', variant: 'info', percentage: 90})
-  const receipt = await tx.wait();
-  console.log(receipt);
+  // const tx = await _hongbaoContract.withdraw(proofData, publicSignals);
+  // _setProgress({status: 'Waiting Confirmation...', variant: 'info', percentage: 90})
+  // const receipt = await tx.wait();
+  // console.log(receipt);
 
-  _setProgress({status: 'Done!', variant: 'info', percentage: 100})
+  const hongbaoAddress = _hongbaoContract.address;
+  const response = await postToRelayer(proofData, publicSignals, hongbaoAddress);
+  if (response.code !== 0) {
+    _setProgress({status: response.error, variant: 'danger', percentage: 100})
+  } else {
+    _setProgress({status: 'Done!', variant: 'info', percentage: 100})
+  }
 } 
 
 export const makeWithdrawal = async (_campaignContractAddress, _setProgress) => {

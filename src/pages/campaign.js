@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Card, Button, Form, Row, Col, ProgressBar, ButtonToolbar} from 'react-bootstrap';
 import Layout from '../components/Layout';
-import { getCampaignInfo, makeDeposit, makeTransfer, makeWithdrawal } from '/static/contract';
+import { getCampaignInfo, getFee, makeDeposit, makeTransfer, makeWithdrawal } from '/static/contract';
 import {generateDeposit} from '/static/utils'
 
 const CampaignPage = () => {
@@ -56,7 +56,8 @@ const CampaignPage = () => {
                         txArgs, 
                         HongbaoContract, 
                         campaign.contract,
-                        setProgress
+                        setProgress,
+                        getFee(campaign.amount)
                         );
   }
 
