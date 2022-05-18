@@ -1,0 +1,74 @@
+{
+    "main":{
+        "CHAIN_URL": "https://api.harmony.one",
+        "ETH_HONGBAO_CONTRACTS":{
+            "1" : {
+                "ADDRESS" : "0x85f179b1763AE933d6B95A8B473889e9d290A784",
+                "FEE": "0.1"
+            },
+            "10" : {
+                "ADDRESS" : "0x674f5440Aea3679A5567dFE3c621131Da427605B",
+                "FEE": "1"
+            },
+            "100" : {
+                "ADDRESS" : "0x79670b9EBCcb8c562F0e42c46EE8086726F9B93D",
+                "FEE": "1"
+            },
+            "1000" : {
+                "ADDRESS" : "0x56A67a9933EC75d47E29c7D1D6C8d155A54ccf43",
+                "FEE": "1"
+            }
+        },
+        "CAMPAIGN_MANAGER_CONTRACT_ADDRESS": "0x46ae45448ddEd730d1AcA074f806109245a08502",
+        "RELAYER_ADDRESS": "0xB685a03E2fDbb4F66aF57513Ea64c7821E15DA37",
+        "RELAYER_URL":"http://relayer.redbao.me"
+    },
+    "test":{
+        "CHAIN_URL": "https://api.s0.b.hmny.io",
+        "ETH_HONGBAO_CONTRACTS":{
+            "1" : {
+                "ADDRESS" : "0xC8B9DFe300F374491a25597043252F1343b250f0",
+                "FEE": "0.1"
+            },
+            "10" : {
+                "ADDRESS" : "0x5B26C997f65e5E4ec93CB05A9a795F9DE2D4150e",
+                "FEE": "1"
+            },
+            "100" : {
+                "ADDRESS" : "0x5b630F70943199EaD899D61BdfaC42D5DC699c95",
+                "FEE": "1"
+            },
+            "1000" : {
+                "ADDRESS" : "0x1B3Ed84f469c65B35E38e6Ff64584dE9a92d4f13",
+                "FEE": "1"
+            }
+        },
+        "CAMPAIGN_MANAGER_CONTRACT_ADDRESS": "0x68ca3828C0268Cd9A6048E7F3DB4fDfcf971C38d",
+        "RELAYER_ADDRESS": "0xB685a03E2fDbb4F66aF57513Ea64c7821E15DA37",
+        "RELAYER_URL":"http://relayer.redbao.me"
+    },
+    "dev":{
+        "CHAIN_URL": "http://127.0.0.1:9545",
+        "ETH_HONGBAO_CONTRACTS":{
+            "1" : {
+                "ADDRESS" : "0x0CD5a54bBA5141d323d1aFe8F93B35689963a590",
+                "FEE": "0.1"
+            },
+            "10" : {
+                "ADDRESS" : "0x695B4367D9096D287960718Bf509bB53be6e3B56",
+                "FEE": "1"
+            },
+            "100" : {
+                "ADDRESS" : "0x46E248A26DF44Ab181853823525b7481a5053146",
+                "FEE": "1"
+            },
+            "1000" : {
+                "ADDRESS" : "0x49be4829a87fBd4E258995De15BE845B8cb4716f",
+                "FEE": "1"
+            }
+        },
+        "CAMPAIGN_MANAGER_CONTRACT_ADDRESS": "0xFaA61fF00986079Ce84189F35b1677610A2eCd98",
+        "RELAYER_ADDRESS": "0xB685a03E2fDbb4F66aF57513Ea64c7821E15DA37",
+        "RELAYER_URL":"http://localhost:3000/api/relay"
+    }
+}

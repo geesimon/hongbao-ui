@@ -2,19 +2,16 @@ import { ethers } from 'ethers';
 import ETHHongbaoContract from '../src/contracts/ETHHongbao.json';
 import CampaignManagerContract from '../src/contracts/CampaignManager.json';
 import CampaignContract from '../src/contracts/Campaign.json';
+import AllConfig from './config.json';
 import * as utils from './utils.js';
 
 const bigInt = require('big-integer');
 
 const REFUND = '0';
 const TREE_LEVELS = 20;
-const BALANCE_MULTIPLIER = 1;
 
-const RELAYER_URL = 'http://localhost:3000/api/relay';
-
-const CampaignManagerAddress = "0xFaA61fF00986079Ce84189F35b1677610A2eCd98"; //Dev
-// const CampaignManagerAddress = "0x68ca3828C0268Cd9A6048E7F3DB4fDfcf971C38d" //Harmony Test
-// const CampaignManagerAddress = "0x46ae45448ddEd730d1AcA074f806109245a08502"; //Harmony Mainnet
+const env = utils.getCookie("env");
+const config = AllConfig[env ? env : "main"];
 
 const CampaignManagerAbi = CampaignManagerContract.abi;
 // const CampaignManagerAbi = [
@@ -27,41 +24,8 @@ const CampaignManagerAbi = CampaignManagerContract.abi;
 //           "function getCampaignInfo(uint256) view returns (tuple(address,string,string))"
 // ];
 
-const ETHHongbaoAddresses = { 
-  //Dev
-  1 : "0x0CD5a54bBA5141d323d1aFe8F93B35689963a590", 
-  10 : "0x695B4367D9096D287960718Bf509bB53be6e3B56",
-  100 : "0x46E248A26DF44Ab181853823525b7481a5053146",
-  1000 : "0x49be4829a87fBd4E258995De15BE845B8cb4716f"
-};
-
-const Fees = {
-  1: ethers.utils.parseEther('0.1'),
-  10: ethers.utils.parseEther('1'),
-  100: ethers.utils.parseEther('1'),
-  1000: ethers.utils.parseEther('1')
-};
-
-// const ETHHongbaoAddresses = { 
-//   //Harmony Test
-//   1 : "0xC8B9DFe300F374491a25597043252F1343b250f0", 
-//   10 : "0x5B26C997f65e5E4ec93CB05A9a795F9DE2D4150e",
-//   100 : "0x5b630F70943199EaD899D61BdfaC42D5DC699c95",
-//   1000 : "0x1B3Ed84f469c65B35E38e6Ff64584dE9a92d4f13"
-// };
-
-// const ETHHongbaoAddresses = { 
-//   //Harmony Mainnet
-//   1 : "0x85f179b1763AE933d6B95A8B473889e9d290A784", 
-//   10 : "0x674f5440Aea3679A5567dFE3c621131Da427605B",
-//   100 : "0x79670b9EBCcb8c562F0e42c46EE8086726F9B93D",
-//   1000 : "0x56A67a9933EC75d47E29c7D1D6C8d155A54ccf43"
-// };
-
 const ETHHongbaoAbi = ETHHongbaoContract.abi;
 const CampaignAbi = CampaignContract.abi;
-
-const RELAYER = '0xb685a03e2fdbb4f66af57513ea64c7821e15da37';
 
 export const abiJson2Human = () => {
   let iface = new ethers.utils.Interface(CampaignManagerAbi);
@@ -99,7 +63,11 @@ const getSigner = async () => {
 const getCampaignManager = async (_useSigner) => {
   const provider = _useSigner ? await getSigner() : getProvider();
 
-  return new ethers.Contract(CampaignManagerAddress, CampaignManagerAbi, provider);
+  return new ethers.Contract(
+                              config.CAMPAIGN_MANAGER_CONTRACT_ADDRESS, 
+                              CampaignManagerAbi, 
+                              provider
+                            );
 }
 
 const getETHHongbao = async (_address) => {
@@ -114,7 +82,7 @@ const getCampaign = async (_address) => {
   return new ethers.Contract(_address, CampaignAbi, provider);
 }
 
-export const getFee = (_amount) => Fees[_amount];
+export const getFee = (_amount) => ethers.utils.parseEther(config.ETH_HONGBAO_CONTRACTS[_amount].FEE);
 
 export const createCampaign = async (_name, _description) => {
   const campaignManager = await getCampaignManager(true);
@@ -130,7 +98,11 @@ export const getMyCampaignIDs = async () => {
 
 export const getCampaignInfo = async (_id) => {
   const provider = getProvider();
-  const campaignManager = new ethers.Contract(CampaignManagerAddress, CampaignManagerAbi, provider);
+  const campaignManager = new ethers.Contract(
+                                              config.CAMPAIGN_MANAGER_CONTRACT_ADDRESS, 
+                                              CampaignManagerAbi, 
+                                              provider
+                                            );
 
   const res =  await campaignManager.getCampaignInfo(_id);
   const balance = await provider.getBalance(res.campaignContract);
@@ -139,19 +111,20 @@ export const getCampaignInfo = async (_id) => {
           contract:res.campaignContract, 
           name: res.name, 
           description:res.description,
-          balance: ethers.utils.formatEther((Number(balance) * BALANCE_MULTIPLIER).toString())
+          balance: ethers.utils.formatEther((Number(balance)).toString())
         };
 }
 
 export const makeDeposit = async(_commitment, _amount, _setProgress) => {
     _setProgress({status: 'Making deposit', variant: 'info', percentage: 5})
-    const ETHHongbao = await getETHHongbao(ETHHongbaoAddresses[_amount]);
-    const sendValue = ethers.utils.parseEther((_amount / BALANCE_MULTIPLIER).toString()).toString();
-    _setProgress({status: 'Making Deposit...', variant: 'info', percentage: 5})
+    const ETHHongbao = await getETHHongbao(config.ETH_HONGBAO_CONTRACTS[_amount].ADDRESS);
+    const sendValue = ethers.utils.parseEther((_amount).toString()).toString();
     const tx = await ETHHongbao.deposit(utils.toFixedHex(_commitment), 
                                               { value: sendValue });
+
     _setProgress({status: 'Waiting Confirmation...', variant: 'info', percentage: 20})
     const {events} = await tx.wait();
+    
     console.log(events[0].args);
     
     return {
@@ -166,7 +139,7 @@ const postToRelayer = async (_proofData, _publicSignals, _hongbaoAddress) => {
                                   publicSignals: _publicSignals,
                                   hongbaoAddress: _hongbaoAddress
                                 });
-  const rawResponse = await window.fetch(RELAYER_URL, {
+  const rawResponse = await window.fetch(config.RELAYER_URL, {
                                       method: 'POST',
                                       headers: {
                                         'Accept': 'application/json',
@@ -202,7 +175,7 @@ export const makeTransfer = async(
     pathElements: pathElements,
     pathIndices: utils.bits2PathIndices(pathIndices, TREE_LEVELS),
     recipient: _recipientAddress,
-    relayer: bigInt(RELAYER.slice(2), 16).toString(),
+    relayer: bigInt(config.RELAYER_ADDRESS.slice(2), 16).toString(),
     fee: _fee.toString(),
     refund: REFUND.toString(),
   };
