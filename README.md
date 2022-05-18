@@ -2,6 +2,10 @@
 
 Hongbao is a web3 ZKP application that anyone can setup a donation campaign while keeping the donors’ activities completely anonymous. 
 
+## Configuration
+
+Update `./static/config.json` with relevant settings.
+
 ## Local Setup
 
 1. `npm  install`
