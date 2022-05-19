@@ -1,10 +1,20 @@
 import * as React from 'react';
 import {Table, Button} from 'react-bootstrap';
 import Layout from '../components/Layout';
-import {getMyCampaignIDs, getCampaignInfo} from '/static/contract'
+import {
+        getMyCampaignIDs, 
+        getCampaignInfo, 
+        hookAccountsChanged, 
+        unhookAccountsChanged
+      } from '/static/contract'
 
 const MyCampaigns = () => {
   const [campaigns, setCampaigns] = React.useState([]);
+
+  const accountChangedHandler = (accounts) =>{
+    console.log("Account changes to:", accounts);
+    window.location.reload();
+  }
 
   React.useEffect(() => {
     getMyCampaignIDs()
@@ -15,6 +25,11 @@ const MyCampaigns = () => {
       .catch(err =>{
         console.error(err);
       })
+
+      hookAccountsChanged(accountChangedHandler);
+      return () => {
+        unhookAccountsChanged(accountChangedHandler);
+      };
   }, []);
   
   return (

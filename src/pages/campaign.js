@@ -42,27 +42,26 @@ const CampaignPage = () => {
     // console.log(mimcHasher(1, 2));
     // mimcHasher(1, 2).then(n => console.log(n));
     // pedersenHasher(Buffer(32).fill(1)).then(n => console.log(n));
-    setProgress({status: 'Generating Deposit Commitment...', percentage: 1})
+    setProgress({status: 'Generating Deposit Commitment...', variant: 'info', percentage: 1})
     const depositNote = await generateDeposit();
     console.log(depositNote);
 
     try{
       const {HongbaoContract, txArgs} = await makeDeposit(
-        depositNote.commitment, 
-        campaign.amount,
-        setProgress
-        );
-
-        await makeTransfer(
-                            depositNote, 
-                            txArgs, 
-                            HongbaoContract, 
-                            campaign.contract,
-                            setProgress,
-                            getFee(campaign.amount)
-                          );
-
+                                                        depositNote.commitment, 
+                                                        campaign.amount,
+                                                        setProgress
+                                                        );
+      await makeTransfer(
+                          depositNote, 
+                          txArgs, 
+                          HongbaoContract, 
+                          campaign.contract,
+                          setProgress,
+                          getFee(campaign.amount)
+                        );
     } catch(err){
+      setProgress({status: err.message, variant: 'danger', percentage: 100});
       console.log(err);
     }
   }
@@ -71,6 +70,7 @@ const CampaignPage = () => {
     try{
       await makeWithdrawal(campaign.contract, setProgress);
     } catch(err){
+      setProgress({status: err.message, variant: 'danger', percentage: 100});
       console.log(err);
     }    
   }

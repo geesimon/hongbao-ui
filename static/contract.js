@@ -39,14 +39,21 @@ export const abiJson2Human = () => {
   console.log(iface.format(ethers.utils.FormatTypes.full));  
 }
 
-// window.ethereum.on('accountsChanged', (accounts) => {
-//   window.location.reload();
-// });
+export const hookAccountsChanged = (accountChangedHandler) =>{
+  const {ethereum} = window;
 
-window.ethereum.on('chainChanged', (chainId) => {
-  console.log("Chain changed to:", chainId);
-  // window.location.reload();
-});
+  if (ethereum) {
+    ethereum.on('accountsChanged', accountChangedHandler);  
+  }
+}
+
+export const unhookAccountsChanged = (accountChangedHandler) =>{
+  const {ethereum} = window;
+
+  if (ethereum){
+    ethereum.removeListener('accountsChanged', accountChangedHandler);
+  }
+}
 
 const getWeb3Provider = async () => {
   const {ethereum} = window;
@@ -238,7 +245,7 @@ export const makeTransfer = async(
   }
 
   _setProgress({status: 'Transfering Fund...', variant: 'info', percentage: 60})
-  
+
   const proofData = utils.packProofData(proof);
 
   // const tx = await _hongbaoContract.withdraw(proofData, publicSignals);
