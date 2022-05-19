@@ -1,6 +1,10 @@
 {
     "main":{
+        "CHAIN_NAME": "Harmony Mainnet",
         "CHAIN_URL": "https://api.harmony.one",
+        "CHAIN_CURRENCY_SYMBOL": "ONE",
+        "CHAIN_EXPLORER_URL": "https://explorer.harmony.one/",
+        "CHAIN_IDS": ["1666600000", "1666600001", "1666600002", "1666600003"],
         "ETH_HONGBAO_CONTRACTS":{
             "1" : {
                 "ADDRESS" : "0x85f179b1763AE933d6B95A8B473889e9d290A784",
@@ -24,7 +28,11 @@
         "RELAYER_URL":"http://relayer.redbao.me"
     },
     "test":{
+        "CHAIN_NAME": "Harmony Testnet",
         "CHAIN_URL": "https://api.s0.b.hmny.io",
+        "CHAIN_CURRENCY_SYMBOL": "ONE",
+        "CHAIN_EXPLORER_URL": "https://explorer.pops.one/",
+        "CHAIN_IDS": ["1666700000", "1666700001", "1666700002", "1666700003"],
         "ETH_HONGBAO_CONTRACTS":{
             "1" : {
                 "ADDRESS" : "0xC8B9DFe300F374491a25597043252F1343b250f0",
@@ -48,7 +56,11 @@
         "RELAYER_URL":"http://relayer.redbao.me"
     },
     "dev":{
+        "CHAIN_NAME": "Local Develop",
         "CHAIN_URL": "http://127.0.0.1:9545",
+        "CHAIN_CURRENCY_SYMBOL": "ONE",
+        "CHAIN_EXPLORER_URL": "",
+        "CHAIN_IDS": ["1337"],
         "ETH_HONGBAO_CONTRACTS":{
             "1" : {
                 "ADDRESS" : "0x0CD5a54bBA5141d323d1aFe8F93B35689963a590",

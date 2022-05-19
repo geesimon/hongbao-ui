@@ -39,24 +39,68 @@ export const abiJson2Human = () => {
   console.log(iface.format(ethers.utils.FormatTypes.full));  
 }
 
-const getProvider = () => {
+// window.ethereum.on('accountsChanged', (accounts) => {
+//   window.location.reload();
+// });
+
+window.ethereum.on('chainChanged', (chainId) => {
+  console.log("Chain changed to:", chainId);
+  // window.location.reload();
+});
+
+const getWeb3Provider = async () => {
   const {ethereum} = window;
   
   if(!ethereum) {
     throw new Error('Please make sure you have Metamask compatible wallet installed!');
   }
-  return new ethers.providers.Web3Provider(window.ethereum);
+  
+  // Swith to appropriate chain
+  if (!ethereum.chainId || !config.CHAIN_IDS.includes(parseInt(ethereum.chainId).toString())){    
+    console.log("Swith network to:", config.CHAIN_IDS[0]);
+    const chainID = '0x'+ parseInt(config.CHAIN_IDS[0]).toString(16);
+    try{
+      await ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: chainID }]
+      });
+      console.log("Switch done!");
+    } catch(switchError){
+      // This error code indicates that the chain has not been added to MetaMask.
+      if (switchError.code === 4902) {
+        // Add network to MetaMask
+        await ethereum.request({
+                                method: 'wallet_addEthereumChain',
+                                params: [
+                                  {
+                                    chainId: chainID,
+                                    chainName: config.CHAIN_NAME,
+                                    rpcUrls: [config.CHAIN_URL],
+                                    nativeCurrency: {
+                                                      symbol: config.CHAIN_CURRENCY_SYMBOL
+                                                    },
+                                    blockExplorerUrls:[config.CHAIN_EXPLORER_URL]
+                                  },
+                                ],
+                              });
+      } else{
+        throw switchError;
+      }
+    }
+  }
+
+  return new ethers.providers.Web3Provider(ethereum);
 }
 
 const connectWallet = async () => {
-  const web3Provider = getProvider();
+  const web3Provider = await getWeb3Provider();
   
   await web3Provider.send("eth_requestAccounts", []);
   return web3Provider.getSigner();
 }
 
 const getCampaignManager = async (_useSigner) => {
-  const provider = _useSigner ? await connectWallet() : getProvider();
+  const provider = _useSigner ? await connectWallet() : await getWeb3Provider();
 
   return new ethers.Contract(
                               config.CAMPAIGN_MANAGER_CONTRACT_ADDRESS, 
@@ -92,7 +136,7 @@ export const getMyCampaignIDs = async () => {
 }
 
 export const getCampaignInfo = async (_id) => {
-  const provider = getProvider();
+  const provider = await getWeb3Provider();
   const campaignManager = new ethers.Contract(
                                               config.CAMPAIGN_MANAGER_CONTRACT_ADDRESS, 
                                               CampaignManagerAbi, 
