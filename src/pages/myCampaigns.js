@@ -7,10 +7,14 @@ const MyCampaigns = () => {
   const [campaigns, setCampaigns] = React.useState([]);
 
   React.useEffect(() => {
-    getMyCampaignIDs().then(ids => {
-      const allInfo = ids.map(id => getCampaignInfo(id));
-      Promise.all(allInfo).then(values => setCampaigns(values))
-    })
+    getMyCampaignIDs()
+      .then(ids => {
+        const allInfo = ids.map(id => getCampaignInfo(id));
+        Promise.all(allInfo).then(values => setCampaigns(values))
+      })
+      .catch(err =>{
+        console.error(err);
+      })
   }, []);
   
   return (

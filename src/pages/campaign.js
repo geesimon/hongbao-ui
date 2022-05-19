@@ -46,23 +46,33 @@ const CampaignPage = () => {
     const depositNote = await generateDeposit();
     console.log(depositNote);
 
-    const {HongbaoContract, txArgs} = await makeDeposit(
-                                                        depositNote.commitment, 
-                                                        campaign.amount,
-                                                        setProgress
-                                                        );
-    await makeTransfer(
-                        depositNote, 
-                        txArgs, 
-                        HongbaoContract, 
-                        campaign.contract,
-                        setProgress,
-                        getFee(campaign.amount)
-                        );
+    try{
+      const {HongbaoContract, txArgs} = await makeDeposit(
+        depositNote.commitment, 
+        campaign.amount,
+        setProgress
+        );
+
+        await makeTransfer(
+                            depositNote, 
+                            txArgs, 
+                            HongbaoContract, 
+                            campaign.contract,
+                            setProgress,
+                            getFee(campaign.amount)
+                          );
+
+    } catch(err){
+      console.log(err);
+    }
   }
 
   const handleWithdrawClick = async() =>{
-    await makeWithdrawal(campaign.contract, setProgress);
+    try{
+      await makeWithdrawal(campaign.contract, setProgress);
+    } catch(err){
+      console.log(err);
+    }    
   }
 
   const handleChangeAmount = (event) =>{

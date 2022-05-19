@@ -12,6 +12,7 @@ const TREE_LEVELS = 20;
 
 const env = utils.getCookie("env");
 const config = AllConfig[env ? env : "main"];
+// console.log(config);
 
 const CampaignManagerAbi = CampaignManagerContract.abi;
 // const CampaignManagerAbi = [
@@ -42,26 +43,20 @@ const getProvider = () => {
   const {ethereum} = window;
   
   if(!ethereum) {
-    alert("Please make sure you have Metamask compatible wallet installed!");
-    return;
+    throw new Error('Please make sure you have Metamask compatible wallet installed!');
   }
   return new ethers.providers.Web3Provider(window.ethereum);
 }
 
-const getSigner = async () => {
+const connectWallet = async () => {
   const web3Provider = getProvider();
-    
-  try{
-    await web3Provider.send("eth_requestAccounts", []);
-    return web3Provider.getSigner();
-  } catch (err) {
-    console.log(err)
-    return null;
-  }
+  
+  await web3Provider.send("eth_requestAccounts", []);
+  return web3Provider.getSigner();
 }
 
 const getCampaignManager = async (_useSigner) => {
-  const provider = _useSigner ? await getSigner() : getProvider();
+  const provider = _useSigner ? await connectWallet() : getProvider();
 
   return new ethers.Contract(
                               config.CAMPAIGN_MANAGER_CONTRACT_ADDRESS, 
@@ -71,13 +66,13 @@ const getCampaignManager = async (_useSigner) => {
 }
 
 const getETHHongbao = async (_address) => {
-  const provider = await getSigner();
+  const provider = await connectWallet();
 
   return new ethers.Contract(_address, ETHHongbaoAbi, provider);
 }
 
 const getCampaign = async (_address) => {
-  const provider = await getSigner();
+  const provider = await connectWallet();
 
   return new ethers.Contract(_address, CampaignAbi, provider);
 }

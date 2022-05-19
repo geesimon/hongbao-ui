@@ -15,8 +15,8 @@ const CreateCampaignPage = () => {
       if (campaignInfo.name.length === 0 || campaignInfo.description.length === 0) {
         alert("Title or description cannot be empty");
       } else {
-        await createCampaign(campaignInfo.name, campaignInfo.description);
-        navigate("/myCampaigns");
+          await createCampaign(campaignInfo.name, campaignInfo.description);
+          navigate("/myCampaigns");          
       }
     } catch (err) {
       console.log(err);
