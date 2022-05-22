@@ -25,7 +25,7 @@
         },
         "CAMPAIGN_MANAGER_CONTRACT_ADDRESS": "0x46ae45448ddEd730d1AcA074f806109245a08502",
         "RELAYER_ADDRESS": "0xB685a03E2fDbb4F66aF57513Ea64c7821E15DA37",
-        "RELAYER_URL":"http://relayer.redbao.me"
+        "RELAYER_URL":"https://relayer.redbao.me"
     },
     "test":{
         "CHAIN_NAME": "Harmony Testnet",
@@ -53,7 +53,7 @@
         },
         "CAMPAIGN_MANAGER_CONTRACT_ADDRESS": "0x68ca3828C0268Cd9A6048E7F3DB4fDfcf971C38d",
         "RELAYER_ADDRESS": "0xB685a03E2fDbb4F66aF57513Ea64c7821E15DA37",
-        "RELAYER_URL":"http://relayer.redbao.me"
+        "RELAYER_URL":"https://relayer.redbao.me"
     },
     "dev":{
         "CHAIN_NAME": "Local Develop",

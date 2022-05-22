@@ -6,7 +6,7 @@ exports.onCreateWebpackConfig = ({ actions }) => {
         plugins: [
             new NodePolyfillPlugin(),
             new webpack.DefinePlugin({
-                'process.browser': true,                
+                'process.browser': true,
               })
         ],    
         resolve: {

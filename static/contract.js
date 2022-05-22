@@ -4,13 +4,14 @@ import CampaignManagerContract from '../src/contracts/CampaignManager.json';
 import CampaignContract from '../src/contracts/Campaign.json';
 import AllConfig from './config.json';
 import * as utils from './utils.js';
+import { getCookie } from './cookie';
 
 const bigInt = require('big-integer');
 
 const REFUND = '0';
 const TREE_LEVELS = 20;
 
-const env = utils.getCookie("env");
+const env = getCookie("env");
 const config = AllConfig[env ? env : "main"];
 // console.log(config);
 
