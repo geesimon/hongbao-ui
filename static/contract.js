@@ -196,8 +196,6 @@ const postToRelayer = async (_proofData, _publicSignals, _hongbaoAddress) => {
 
   const response = await rawResponse.json();
 
-  // console.log("Relayer response:", response);
-
   return response;
 }
 
@@ -257,7 +255,7 @@ export const makeTransfer = async(
   const hongbaoAddress = _hongbaoContract.address;
   const response = await postToRelayer(proofData, publicSignals, hongbaoAddress);
   if (response.code !== 0) {
-    _setProgress({status: response.error, variant: 'danger', percentage: 100})
+    _setProgress({status: response.message, variant: 'danger', percentage: 100})
   } else {
     _setProgress({status: 'Done!', variant: 'info', percentage: 100})
   }
