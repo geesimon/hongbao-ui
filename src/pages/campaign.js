@@ -39,9 +39,6 @@ const CampaignPage = () => {
   }, []);
 
   const handleGiveClick = async () => {
-    // console.log(mimcHasher(1, 2));
-    // mimcHasher(1, 2).then(n => console.log(n));
-    // pedersenHasher(Buffer(32).fill(1)).then(n => console.log(n));
     setProgress({status: 'Generating Deposit Commitment...', variant: 'info', percentage: 1})
     const depositNote = await generateDeposit();
     console.log(depositNote);

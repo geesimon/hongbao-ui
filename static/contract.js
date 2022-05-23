@@ -182,6 +182,7 @@ export const makeDeposit = async(_commitment, _amount, _setProgress) => {
 
 const postToRelayer = async (_proofData, _publicSignals, _hongbaoAddress) => {
   const reqJSON = JSON.stringify({
+                                  env: env,
                                   proofData: _proofData,
                                   publicSignals: _publicSignals,
                                   hongbaoAddress: _hongbaoAddress
