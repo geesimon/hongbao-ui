@@ -11,8 +11,8 @@ const bigInt = require('big-integer');
 const REFUND = '0';
 const TREE_LEVELS = 20;
 
-const env = getCookie("env");
-const config = AllConfig[env ? env : "main"];
+const env = getCookie("env") ? getCookie("env") : 'main';
+const config = AllConfig[env];
 // console.log(config);
 
 const CampaignManagerAbi = CampaignManagerContract.abi;
